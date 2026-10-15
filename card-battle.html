@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ミニ・カードバトル</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--felt:#1d4a43;--felt2:#163a35;--ink:#1c1a17;--paper:#f6f0e0;--gold:#e3a72f;--red:#c8453b;--blue:#3d7fb8;--txt:#f6f0e0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--felt:#10302b;--felt2:#0b231f}}
+:root[data-theme="dark"]{--felt:#10302b;--felt2:#0b231f}
+html{height:100%;background:var(--felt2);scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;display:flex;flex-direction:column;background:var(--felt);color:var(--txt);font-family:'Zen Maru Gothic',system-ui,'Hiragino Maru Gothic ProN','Yu Gothic',sans-serif;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;overflow:hidden}
+#eh{padding:8px 8px 0}
+.hero{display:flex;gap:12px;align-items:center;justify-content:center;background:var(--felt2);color:var(--txt);border:2px solid #fff3;border-radius:10px;padding:8px;font:inherit;font-weight:700;font-size:14px;width:100%}
+.hero b{font-size:18px;color:var(--gold)}
+.hero.tg{box-shadow:0 0 0 3px var(--red);animation:pl 1s infinite}
+.bd{flex:1;display:flex;gap:10px;align-items:center;justify-content:center;padding:8px;min-height:100px}
+#msg{text-align:center;font-size:13px;padding:4px;min-height:22px;color:var(--gold);font-weight:700}
+#hand{display:flex;gap:10px;padding:12px 14px 8px;overflow-x:auto;min-height:106px;align-items:flex-end}
+#bar{display:flex;gap:8px;padding:8px}
+#bar .hero{flex:1}
+#end{background:var(--gold);color:var(--ink);border:0;border-radius:10px;font:inherit;font-weight:900;padding:0 18px;font-size:15px}
+#end:disabled{opacity:.4}
+.c{width:60px;height:86px;border-radius:7px;background:var(--paper);color:var(--ink);position:relative;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:700;text-align:center;padding:4px 3px;border:2px solid #0003;box-sizing:border-box;transition:transform .15s}
+.c .n{line-height:1.2}
+.c .d{font-size:9px;font-weight:500;margin-top:3px;color:#5a4a2e}
+.c .co,.c .a,.c .h{position:absolute;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;color:#fff}
+.c .co{top:-7px;left:-7px;background:var(--blue)}
+.c .a{bottom:-7px;left:-7px;background:var(--gold);color:var(--ink)}
+.c .h{bottom:-7px;right:-7px;background:var(--red)}
+.c.t{border:3px solid var(--blue)}
+.c.sp{background:#e8dcf1}
+.c.rd{box-shadow:0 0 0 3px var(--gold)}
+.c.sel{transform:translateY(-8px);box-shadow:0 0 0 3px #fff}
+.c.tg{box-shadow:0 0 0 3px var(--red);animation:pl 1s infinite}
+.c.dim{opacity:.55}
+@keyframes pl{50%{box-shadow:0 0 0 6px var(--red)}}
+#ov{position:fixed;inset:0;display:none;place-items:center;background:#000a;padding:24px;z-index:9}
+#ov.on{display:grid}
+#ov div{background:var(--paper);color:var(--ink);border-radius:14px;padding:22px;max-width:340px;text-align:left;line-height:1.7;font-size:14px}
+#ov h2{margin:0 0 8px;font-size:22px;text-align:center}
+#ov button{display:block;margin:14px auto 0;background:var(--gold);border:0;border-radius:10px;padding:10px 28px;font:inherit;font-weight:900;font-size:16px;color:var(--ink)}
+#tip{display:flex;gap:6px;align-items:center;padding:0 10px 4px;font-size:12px}
+#tip span{flex:1;background:#0004;border-radius:8px;padding:5px 9px;line-height:1.4}
+#tip button{background:#fff2;color:var(--txt);border:0;border-radius:8px;padding:6px 9px;font:inherit;font-size:12px;font-weight:700}
+#tl{position:fixed;left:0;right:0;top:40%;text-align:center;font-size:30px;font-weight:900;color:var(--gold);text-shadow:0 2px 8px #000;pointer-events:none;z-index:8;animation:tl 1.3s forwards}
+@keyframes tl{0%{opacity:0;transform:scale(.7)}20%,70%{opacity:1;transform:scale(1)}100%{opacity:0}}
+#ov button.lv{margin:8px 0 0;width:100%}
+#ov .sm{font-size:12px;font-weight:500;color:#5a4a2e;line-height:1.5}
+#ct{position:fixed;inset:0;display:grid;place-items:center;background:#0006;z-index:10;cursor:pointer;animation:ctf .25s}
+#ct .bx{background:#000e;color:#fff;border:2px solid var(--gold);border-radius:12px;padding:14px 20px;text-align:center;font-weight:700;font-size:16px;line-height:1.7;max-width:86%}
+#ct small{display:block;margin-top:8px;font-size:12px;font-weight:500;color:#fffa}
+#ct .bx div:first-child{color:var(--gold)}
+@keyframes ctf{0%{opacity:0}100%{opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="eh"></div>
+<div id="eb" class="bd"></div>
+<div id="msg"></div>
+<div id="pb" class="bd"></div>
+<div id="tip"></div>
+<div id="hand"></div>
+<div id="bar"></div>
+<div id="ov"></div>
+<script>
+const D=[
+{n:'見習い兵',c:1,a:1,h:2},{n:'野良猫',c:1,a:2,h:1},{n:'盾の兵',c:2,a:1,h:4,t:1},
+{n:'弓兵',c:2,a:2,h:2},{n:'騎士',c:3,a:3,h:3},{n:'魔術師',c:3,a:2,h:4},
+{n:'大熊',c:4,a:4,h:4},{n:'竜の子',c:5,a:5,h:4},{n:'巨人',c:6,a:6,h:7},
+{n:'火球',c:3,s:'dmg',v:4},{n:'雷撃',c:2,s:'dmg',v:2},
+{n:'治癒',c:2,s:'heal',v:5},{n:'知恵',c:2,s:'draw',v:2}];
+let run=0;
+const $=s=>document.querySelector(s),sleep=async ms=>{const r=run;await new Promise(x=>setTimeout(x,ms));while(G&&G.paused)await new Promise(x=>setTimeout(x,150));if(r!==run)throw 0};
+let G,uid=0;
+const msg=t=>$('#msg').textContent=t;
+const canHeal=p=>p.hp<20||p.board.some(c=>c.ah<c.mh);
+let tapRes=null;
+function dismissCt(){const o=document.getElementById('ct');if(o)o.remove();if(tapRes){const f=tapRes;tapRes=null;f()}}
+async function waitTap(){const r=run;if(document.getElementById('ct'))await new Promise(x=>{tapRes=x});else await sleep(900);while(G&&G.paused)await new Promise(x=>setTimeout(x,150));if(r!==run)throw 0}
+function ct(l){dismissCt();const d=document.createElement('div');d.id='ct';d.innerHTML='<div class="bx">'+l.map(x=>`<div>${x}</div>`).join('')+'<small>タップして進む ▶</small></div>';document.body.appendChild(d)}
+function telop(t){const d=document.createElement('div');d.id='tl';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),1300)}
+function tipHTML(){
+  const me=G.p[0],s=G.sel;
+  const btn=`<button id="mn">⏸ メニュー</button><button id="gd">ガイド${G.guide?'OFF':'ON'}</button>`;
+  if(!G.guide)return btn;
+  let t;
+  if(G.turn)t='相手のターンです。少し待ちましょう';
+  else if(s&&s.k==='s')t='赤く光っている対象をタップして魔法を使います。もう一度手札をタップで取り消し';
+  else if(s&&s.k==='a')t='攻撃する相手をタップ。赤く光るカードか、上の相手本人を攻撃できます';
+  else if(me.hand.some(c=>c.c<=me.mana&&(c.s||me.board.length<5)&&(c.s!=='heal'||canHeal(me))))t='手札の明るいカードをタップして出そう(左上の数字=必要マナ)';
+  else if(me.board.some(c=>c.ready))t='金色の枠のカードをタップすると攻撃できます';
+  else t='今できることはありません。「ターン終了」をタップ';
+  return `<span>💡 ${t}</span>`+btn;
+}
+function menuHTML(){
+  const m=G.menu;
+  if(m==='m')return `<div><h2>一時停止中</h2><button id="rsm">ゲームを再開</button><button class="lv" id="mrl">ルールを見る</button><button class="lv" id="mrs">最初からやり直す</button><button class="lv" id="mq">ゲームをやめる</button></div>`;
+  const q=m==='q';
+  return `<div><h2>${q?'ゲームをやめますか?':'最初からやり直しますか?'}</h2>今の対戦の進行は失われます。${q?'(レベル選択に戻ります)':'(同じレベルで始めます)'}<button class="lv" id="${q?'qy':'ry'}">はい</button><button class="lv" id="mb">いいえ、戻る</button></div>`;
+}
+function ovHTML(){
+  const lvs=['かんたん','ふつう','むずかしい'],ds=['CPUは手探りで行動。HPも少なめ(15)','標準的な強さ','CPUは賢く攻め、毎ターン1枚多く引く'];
+  return `<div><h2>ミニ・カードバトル</h2>相手のHPを0にすれば勝ち(HP20)。<br><b>カードの見方</b> 左上=コスト / 左下=攻撃力 / 右下=HP<br>① 手札をタップしてカードを出す(コスト分のマナを使う)<br>② 場の自分のカードをタップ→相手のカードか相手本人をタップで攻撃<br>③ できることがなければ「ターン終了」<br><span class="sm">出したターンは攻撃できません。「挑発」がいると先にそれを攻撃。魔法は使ったあとに対象をタップ。マナは毎ターン1増えます(最大10)。画面下のガイドが次の操作を案内します。</span>`+(G.intro?lvs.map((n,i)=>`<button class="lv" data-lv="${i}">${n}で始める<br><span class="sm">${ds[i]}</span></button>`).join(''):'<button id="cl">とじる</button>')+'</div>';
+}
+const mk=i=>({...D[i],id:++uid,ah:D[i].h,mh:D[i].h,ready:false});
+function init(intro,lv){
+  run++;dismissCt();const ks=G?{lv:G.lv,guide:G.guide}:{lv:1,guide:true};if(lv!==undefined)ks.lv=lv;
+  G={p:[0,1].map(()=>({hp:20,mana:0,max:0,hand:[],board:[],deck:Array.from({length:30},()=>mk(Math.random()*D.length|0))})),turn:0,sel:null,over:false,intro:!!intro,rules:false,lv:ks.lv,guide:ks.guide};G.p[1].hp=[15,20,20][ks.lv];
+  for(let i=0;i<4;i++){draw(0);draw(1)}
+  startTurn(0);msg('あなたのターン');render();
+}
+function draw(s){const p=G.p[s],c=p.deck.pop();if(!c){p.hp-=2;return}if(p.hand.length<8)p.hand.push(c)}
+function chk(){
+  G.p.forEach(p=>p.board=p.board.filter(c=>c.ah>0));
+  if(G.over)return;
+  const l=G.p[0].hp<=0,r=G.p[1].hp<=0;
+  if(l||r){G.over=true;G.win=r?0:1}
+}
+function startTurn(s){const p=G.p[s];p.max=Math.min(10,p.max+1);p.mana=p.max;p.board.forEach(c=>c.ready=true);draw(s);chk()}
+function hit(s,t,v){if(t==='h')G.p[s].hp-=v;else G.p[s].board[t].ah-=v}
+function heal(s,t,v){const p=G.p[s];if(t==='h')p.hp=Math.min(20,p.hp+v);else{const c=p.board[t];c.ah=Math.min(c.mh,c.ah+v)}}
+function playCreature(s,i){const p=G.p[s],c=p.hand.splice(i,1)[0];p.mana-=c.c;c.ready=false;p.board.push(c)}
+function cast(s,i,t){
+  const p=G.p[s],c=p.hand.splice(i,1)[0];p.mana-=c.c;
+  if(c.s==='dmg'){const nm=t==='h'?(1-s?'相手':'あなた'):(1-s?'相手の':'あなたの')+G.p[1-s].board[t].n;hit(1-s,t,c.v);ct([`${s?'相手':'あなた'}の魔法「${c.n}」!`,`${nm}に${c.v}ダメージ`])}
+  else if(c.s==='heal'){heal(s,t,c.v);ct([`${s?'相手':'あなた'}の魔法「${c.n}」!`,`${t==='h'?(s?'相手':'あなた'):(s?'相手の':'あなたの')+G.p[s].board[t].n}が${c.v}回復`])}
+  else for(let k=0;k<c.v;k++)draw(s);
+  chk();
+}
+function canTarget(s,t){const b=G.p[1-s].board,tn=b.some(c=>c.t);return t==='h'?!tn:(!tn||b[t].t)}
+function attack(s,ai,t){
+  const a=G.p[s].board[ai];a.ready=false;
+  const pf=x=>x?'相手の':'あなたの';
+  if(t==='h'){G.p[1-s].hp-=a.a;ct([`${pf(s)}${a.n}の攻撃!`,`${1-s?'相手':'あなた'}に${a.a}ダメージ`])}
+  else{const d=G.p[1-s].board[t];d.ah-=a.a;a.ah-=d.a;ct([`${pf(s)}${a.n}の攻撃!`,`${pf(1-s)}${d.n}に${a.a}ダメージ${d.ah<=0?'(撃破)':''}`,`反撃: ${pf(s)}${a.n}に${d.a}ダメージ${a.ah<=0?'(撃破)':''}`])}
+  chk();
+}
+const desc=c=>c.s==='dmg'?c.v+'ダメージ':c.s==='heal'?c.v+'回復':c.v+'枚ドロー';
+function card(c,cls,at){
+  return `<div class="c ${c.s?'sp':''} ${c.t?'t':''} ${cls}" ${at}><span class="co">${c.c}</span><span class="n">${c.n}</span>`+
+  (c.s?`<span class="d">${desc(c)}</span>`:`${c.t?'<span class="d">挑発</span>':''}<span class="a">${c.a}</span><span class="h">${c.ah}</span>`)+`</div>`;
+}
+function hero(s,tg){
+  const p=G.p[s];
+  return `<button class="hero ${tg?'tg':''}" data-t="${s?'e':'p'}:h"><span>${s?'相手':'あなた'}</span><b>♥ ${p.hp}</b><span>マナ ${p.mana}/${p.max}</span><span>山札 ${p.deck.length}</span>${s?`<span>手札 ${p.hand.length}</span>`:''}</button>`;
+}
+function render(){
+  const me=G.p[0],en=G.p[1],s=G.sel,sp=s&&s.k==='s'?me.hand[s.i]:null,at=s&&s.k==='a';
+  const tgE=k=>(sp&&sp.s==='dmg')||(at&&canTarget(0,k));
+  const tgP=sp&&sp.s==='heal';
+  $('#eh').innerHTML=hero(1,tgE('h'));
+  $('#eb').innerHTML=en.board.map((c,i)=>card(c,tgE(i)?'tg':'',`data-t="e:${i}"`)).join('');
+  $('#pb').innerHTML=me.board.map((c,i)=>card(c,(at&&s.i===i?'sel ':'')+(c.ready&&!G.turn?'rd ':'')+(tgP&&c.ah<c.mh?'tg':''),`data-t="p:${i}"`)).join('');
+  $('#hand').innerHTML=me.hand.map((c,i)=>card(c,(sp&&s.i===i?'sel ':'')+(c.c>me.mana||G.turn||(c.s==='heal'&&!canHeal(me))?'dim':''),`data-h="${i}"`)).join('');
+  $('#bar').innerHTML=hero(0,tgP&&me.hp<20)+`<button id="end" ${G.turn?'disabled':''}>ターン終了</button>`;
+  $('#tip').innerHTML=tipHTML();
+  const o=$('#ov');
+  if(G.intro||G.rules){o.innerHTML=ovHTML();o.className='on'}
+  else if(G.over){o.innerHTML=`<div><h2>${G.win===0?'勝利!':'敗北…'}</h2><button id="rs">同じレベルでもう一度</button><button id="lvc" class="lv">レベルを選びなおす</button></div>`;o.className='on'}
+  else if(G.menu){o.innerHTML=menuHTML();o.className='on'}else o.className='';
+}
+document.addEventListener('click',e=>{
+  if(e.target.closest('#ct')){dismissCt();return}
+  const id=e.target.id;
+  const lb=e.target.closest('[data-lv]');
+  if(lb){init(false,+lb.dataset.lv);telop('ゲーム開始!');return}
+  if(id==='cl'){G.rules=false;render();return}
+  if(id==='rl'){G.rules=true;render();return}
+  if(id==='gd'){G.guide=!G.guide;render();return}
+  if(id==='lvc'){init(true);return}
+  if(id==='mn'){G.menu='m';G.paused=true;render();return}
+  if(id==='rsm'){G.menu=null;G.paused=false;render();return}
+  if(id==='mrl'){G.rules=true;render();return}
+  if(id==='mrs'){G.menu='r';render();return}
+  if(id==='mq'){G.menu='q';render();return}
+  if(id==='mb'){G.menu='m';render();return}
+  if(id==='qy'){init(true);return}
+  if(id==='ry'){init();telop('ゲーム開始!');return}
+  if(id==='rs'){init();telop('ゲーム開始!');return}
+  if(G.turn||G.over||G.intro||G.paused)return;
+  const me=G.p[0];
+  if(e.target.closest('#end')){cpuTurn().catch(()=>{});return}
+  const h=e.target.closest('[data-h]'),t=e.target.closest('[data-t]'),s=G.sel;
+  if(h){
+    const i=+h.dataset.h,c=me.hand[i];
+    if(s&&s.k==='s'&&s.i===i){G.sel=null;return render()}
+    if(c.c>me.mana){msg('マナが足りません');return}
+    if(c.s==='heal'&&!canHeal(me)){msg('回復できる対象がいません(体力が最大です)');return}
+    if(!c.s){
+      if(me.board.length>=5){msg('場がいっぱいです');return}
+      playCreature(0,i);G.sel=null;msg(c.n+'を出した');
+    }else if(c.s==='draw'){cast(0,i);G.sel=null;msg('カードを引いた')}
+    else{G.sel={k:'s',i};msg(c.s==='dmg'?'攻撃する相手をタップ':'回復する対象をタップ')}
+    return render();
+  }
+  if(t){
+    const[sd,x]=t.dataset.t.split(':'),k=x==='h'?'h':+x;
+    if(s&&s.k==='s'){
+      const c=me.hand[s.i];
+      if((c.s==='dmg')===(sd==='e')){if(c.s==='heal'&&(k==='h'?me.hp>=20:me.board[k].ah>=me.board[k].mh)){msg('その対象は体力が最大です');return}cast(0,s.i,k);G.sel=null;msg(c.n+'!')}
+      else msg('その対象は選べません');
+      return render();
+    }
+    if(sd==='p'&&k!=='h'){
+      if(me.board[k].ready)G.sel=(s&&s.k==='a'&&s.i===k)?null:{k:'a',i:k};
+      else msg('このカードはまだ攻撃できません');
+      return render();
+    }
+    if(sd==='e'&&s&&s.k==='a'){
+      if(!canTarget(0,k)){msg('「挑発」のカードを先に倒してください');return}
+      attack(0,s.i,k);G.sel=null;msg('攻撃!');return render();
+    }
+  }
+});
+async function cpuTurn(){
+  G.turn=1;G.sel=null;msg('相手のターン');
+  const cp=G.p[1],me=G.p[0];
+  startTurn(1);if(G.lv===2)draw(1);telop('相手のターン');render();await sleep(1000);
+  for(let g=0;g<12&&!G.over;g++){
+    const L=G.lv,kt=c=>{const k=me.board.map((x,j)=>({x,j})).filter(o=>o.x.ah<=c.v).sort((a,b)=>b.x.a-a.x.a)[0];return k?k.j:-1};
+    const os=cp.hand.map((c,i)=>({c,i})).filter(o=>o.c.c<=cp.mana&&(o.c.s||cp.board.length<5)&&(o.c.s!=='heal'||cp.hp<=(L===2?12:14))&&(L<2||o.c.s!=='dmg'||kt(o.c)>=0||me.hp<=8));
+    const o=L===0?os[Math.random()*os.length|0]:os.sort((a,b)=>b.c.c-a.c.c)[0];
+    if(!o)break;
+    const{c,i}=o;
+    if(!c.s)playCreature(1,i);
+    else if(c.s==='draw')cast(1,i);
+    else if(c.s==='heal')cast(1,i,'h');
+    else{
+      let t='h';
+      const kill=me.board.map((x,j)=>({x,j})).filter(o=>o.x.ah<=c.v).sort((a,b)=>b.x.a-a.x.a)[0];
+      if(L===0){if(me.board.length&&Math.random()<.5)t=Math.random()*me.board.length|0}else if(me.hp>c.v&&kill)t=kill.j;
+      cast(1,i,t);
+    }
+    msg('相手が'+c.n+'を使った');render();await waitTap();
+  }
+  for(const id of cp.board.map(c=>c.id)){
+    if(G.over)break;
+    const j=cp.board.findIndex(c=>c.id===id);
+    if(j<0)continue;
+    const a=cp.board[j];
+    if(!a.ready||(G.lv===0&&Math.random()<.4))continue;
+    let t='h';const tn=me.board.findIndex(c=>c.t);
+    if(tn>=0)t=tn;else if(G.lv===0){if(me.board.length&&Math.random()<.5)t=Math.random()*me.board.length|0}
+    else if(cp.board.filter(c=>c.ready).reduce((n,c)=>n+c.a,0)<me.hp){
+      const tr=me.board.map((x,k)=>({x,k})).filter(o=>a.a>=o.x.ah&&(a.ah>o.x.a||(G.lv===2&&o.x.a+o.x.ah>a.a+a.ah))).sort((p,q)=>q.x.a-p.x.a)[0];
+      if(tr)t=tr.k;
+    }
+    attack(1,j,t);msg('相手の'+a.n+'が攻撃');render();await waitTap();
+  }
+  if(G.over){render();return}
+  G.turn=0;startTurn(0);msg('あなたのターン');render();telop('あなたのターン');
+}
+init(true);
+</script>
+</body>
+</html>
